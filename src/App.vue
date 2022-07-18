@@ -1,15 +1,88 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <h1>{{gameName}}</h1>
+
+  <div id="game">
+    <div v-for="guess in guesses" :key="guess" class="guess">
+      <div 
+        v-for="(e, i) in guess.word.length" :key="i"
+        class="letter" 
+        :class="{ green: guess.pattern[i] == 'green', yellow: guess.pattern[i] == 'yellow', gray: guess.pattern[i] == 'gray' }">{{ guess.word[i] }}</div>
+    </div>
+
+    <div v-if="guesses.length != totalGuessCount" class="guess">
+      <div v-for="letter in letters" :key="letter" class="letter filled">{{ letter }}</div>
+      <div v-for="i in wordLength - letters.length" :key="i" class="letter" :class="{active: i == 1}"></div>
+    </div>
+
+    <div v-for="i in futureGuessCount" :key="i" class="guess">
+      <div v-for="j in wordLength" :key="j" class="letter future"></div>
+    </div>
+
+    <div id="keyboard">
+      <div v-for="row in keyboardRows" :key="row" class="row">
+        <div v-for="key in row" :key="key" class="key" :class="{
+          green: letterColors[key] == 'green',
+          yellow: letterColors[key] == 'yellow',
+          gray: letterColors[key] == 'gray',
+          long: key < 'a' || key > 'z'
+        }">
+          {{key}}
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
 export default {
   name: 'App',
-  components: {
-    HelloWorld
+  created() {
+    window.addEventListener('keydown', this.handleKeydown)
+  },
+  unmounted() {
+    window.removeEventListener('keydown', this.handleKeydown)
+  },
+  computed: {
+    gameName () {
+      return this.$store.state.gameName
+    },
+    wordLength () {
+      return this.$store.state.wordLength
+    },
+    totalGuessCount () {
+      return this.$store.state.totalGuessCount
+    },
+    futureGuessCount () {
+      return Math.max(
+        0,
+        this.$store.state.totalGuessCount - this.$store.state.guesses.length - 1
+      )
+    },
+    letters () {
+      return this.$store.state.letters
+    },
+    guesses () {
+      return this.$store.state.guesses
+    },
+    keyboardRows () {
+      return this.$store.state.keyboardRows
+    },
+    letterColors () {
+      return this.$store.state.letterColors
+    }
+  },
+  methods: {
+    handleKeydown (event) {
+      if (!(event.altKey || event.ctrlKey || event.metaKey || event.repeat) && this.$store.state.guesses.length < this.$store.state.totalGuessCount) {
+        if (event.key >= 'a' && event.key <= 'z') {
+          this.$store.commit('enterLetter', event.key)
+        } else if (event.key == "Backspace") {
+          this.$store.commit('deleteLetter')
+        } else if (event.key == "Enter") {
+          this.$store.commit('enterGuess')
+        }
+      }
+    }
   }
 }
 </script>
@@ -20,7 +93,63 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
   margin-top: 60px;
 }
+
+.guess {
+  display: flex;
+  justify-content: center;
+}
+
+.letter {
+  display: block;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  border: 1px solid #666;
+  margin: 5px;
+  text-transform: capitalize;
+}
+
+.active {
+  border-width: 2px;
+  margin: 4px;
+  border-color: #000;
+}
+
+.green {
+  background-color: #7A7;
+}
+
+.yellow {
+  background-color: #AA7;
+}
+
+.gray {
+  background-color: #AAA;
+}
+
+#keyboard {
+  display: flex;
+  flex-flow: column;
+}
+
+.row {
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+}
+
+.key {
+  display: block;
+  width: 30px;
+  line-height: 40px;
+  border: 1px solid;
+  margin: 3px;
+}
+
+.key.long {
+  width: 50px;
+}
+
 </style>

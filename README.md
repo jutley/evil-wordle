@@ -1,4 +1,4 @@
-# evil-wordle2
+# evil-wordle
 
 ## Project setup
 ```
