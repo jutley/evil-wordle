@@ -1,6 +1,9 @@
 <template>
   <h1>{{gameName}}</h1>
 
+  <p>{{remainingWordsLength}} words remaining</p>
+  <p>{{wordSamples}}</p>
+
   <div id="game">
     <div v-for="guess in guesses" :key="guess" class="guess">
       <div 
@@ -36,8 +39,9 @@
 <script>
 export default {
   name: 'App',
-  created() {
+  mounted() {
     window.addEventListener('keydown', this.handleKeydown)
+    this.$store.dispatch('fetchWords')
   },
   unmounted() {
     window.removeEventListener('keydown', this.handleKeydown)
@@ -69,6 +73,24 @@ export default {
     },
     letterColors () {
       return this.$store.state.letterColors
+    },
+    remainingWordsLength () {
+      if (this.$store.state.remainingWords) {
+        return this.$store.state.remainingWords.length
+      } else {
+        return "..."
+      }
+    },
+    wordSamples () {
+      if (this.$store.state.remainingWords) {
+        var shuffled = this.$store.state.remainingWords
+          .map(value => ({ value, sort: Math.random() }))
+          .sort((a, b) => a.sort - b.sort)
+          .map(({ value }) => value)
+        return shuffled.slice(0, 3)
+      } else {
+        return "..."
+      }
     }
   },
   methods: {
