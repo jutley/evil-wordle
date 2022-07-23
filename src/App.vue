@@ -22,14 +22,25 @@
     </div>
 
     <div id="keyboard">
-      <div v-for="row in keyboardRows" :key="row" class="row">
-        <div v-for="key in row" :key="key" class="key" :class="{
-          green: letterColors[key] == 'green',
-          yellow: letterColors[key] == 'yellow',
-          gray: letterColors[key] == 'gray',
-          long: key < 'a' || key > 'z'
-        }">
+      <div v-for="(row, i) in keyboardRows" :key="row" class="row">
+        <div v-if="i == keyboardRows.length - 1" class="key long" @click="deleteLetter()">
+          del
+        </div>
+        <div
+          v-for="key in row"
+          :key="key"
+          class="key"
+          :class="{
+            green: letterColors[key] == 'green',
+            yellow: letterColors[key] == 'yellow',
+            gray: letterColors[key] == 'gray',
+          }"
+          @click="enterLetter(key)"
+        >
           {{key}}
+        </div>
+        <div v-if="i == keyboardRows.length - 1" class="key long" @click="enterGuess()">
+          ent
         </div>
       </div>
     </div>
@@ -104,6 +115,15 @@ export default {
           this.$store.commit('enterGuess')
         }
       }
+    },
+    enterLetter (letter) {
+      this.$store.commit('enterLetter', letter)
+    },
+    deleteLetter () {
+      this.$store.commit('deleteLetter')
+    },
+    enterGuess () {
+      this.$store.commit('enterGuess')
     }
   }
 }
