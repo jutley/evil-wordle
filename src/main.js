@@ -73,7 +73,7 @@ const store = createStore({
   mutations: {
     populateAllWords (state, words) {
       state.allWords = words
-      state.remainingWords = words
+      state.remainingWords = words.filter(w => w.length == 5)
     },
     enterLetter (state, letter) {
       if (state.letters.length < state.wordLength) {
@@ -113,8 +113,8 @@ const store = createStore({
         .get('words.txt')
         .then(response => response.data)
         .then(wordsRaw => wordsRaw.split("\n"))
+        .then(words => words.map(w => w.toLowerCase()))
         .then(words => commit('populateAllWords', words))
-
     }
   }
 })

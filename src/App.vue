@@ -1,8 +1,10 @@
 <template>
-  <h1>{{gameName}}</h1>
+  <div id="header">
+    <h1>{{gameName}}</h1>
 
-  <p>{{remainingWordsLength}} words remaining</p>
-  <p>{{wordSamples}}</p>
+    <p>{{remainingWordsLength}} words remaining</p>
+    <!-- <p>{{wordSamples}}</p> -->
+  </div>
 
   <div id="game">
     <div v-for="guess in guesses" :key="guess" class="guess">
@@ -20,31 +22,32 @@
     <div v-for="i in futureGuessCount" :key="i" class="guess">
       <div v-for="j in wordLength" :key="j" class="letter future"></div>
     </div>
+  </div>
 
-    <div id="keyboard">
-      <div v-for="(row, i) in keyboardRows" :key="row" class="row">
-        <div v-if="i == keyboardRows.length - 1" class="key long" @click="deleteLetter()">
-          del
-        </div>
-        <div
-          v-for="key in row"
-          :key="key"
-          class="key"
-          :class="{
-            green: letterColors[key] == 'green',
-            yellow: letterColors[key] == 'yellow',
-            gray: letterColors[key] == 'gray',
-          }"
-          @click="enterLetter(key)"
-        >
-          {{key}}
-        </div>
-        <div v-if="i == keyboardRows.length - 1" class="key long" @click="enterGuess()">
-          ent
-        </div>
+  <div id="keyboard">
+    <div v-for="(row, i) in keyboardRows" :key="row" class="row">
+      <div v-if="i == keyboardRows.length - 1" class="key long" @click="deleteLetter()">
+        del
+      </div>
+      <div
+        v-for="key in row"
+        :key="key"
+        class="key"
+        :class="{
+          green: letterColors[key] == 'green',
+          yellow: letterColors[key] == 'yellow',
+          gray: letterColors[key] == 'gray',
+        }"
+        @click="enterLetter(key)"
+      >
+        {{key}}
+      </div>
+      <div v-if="i == keyboardRows.length - 1" class="key long" @click="enterGuess()">
+        ent
       </div>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -130,12 +133,37 @@ export default {
 </script>
 
 <style>
+body{
+  background-color: #123;
+  margin: 0;
+  color: white;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  margin-top: 60px;
+  height: 100vh;
+  width: 100vw;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  --header-height: 100px;
+  --keyboard-height: calc(3 * (50px + 2px));
+  --game-height: calc(100vh - var(--header-height) - var(--keyboard-height));
+}
+
+#header {
+  height: var(--header-height);
+}
+
+h1 {
+  margin: 0;
+}
+
+#game {
+  height: var(--game-height);
 }
 
 .guess {
@@ -148,50 +176,63 @@ export default {
   width: 50px;
   height: 50px;
   line-height: 50px;
-  border: 1px solid #666;
   margin: 5px;
-  text-transform: capitalize;
+  text-transform: uppercase;
+  color: white;
+  background-color: #234;
+  border-radius: 4px;
 }
 
 .active {
-  border-width: 2px;
-  margin: 4px;
-  border-color: #000;
-}
-
-.green {
-  background-color: #7A7;
-}
-
-.yellow {
-  background-color: #AA7;
-}
-
-.gray {
-  background-color: #AAA;
+  background-color: #345;
 }
 
 #keyboard {
   display: flex;
   flex-flow: column;
+  width: calc(100% - 8px);
+  height: calc(var(--keyboard-height) - 8px);
+  padding: 4px;
 }
 
 .row {
   display: flex;
   flex-flow: row;
   justify-content: center;
+  height: calc(33.3%);
 }
 
 .key {
-  display: block;
-  width: 30px;
-  line-height: 40px;
-  border: 1px solid;
-  margin: 3px;
+  display: flex;
+  height: calc(100% - 4px);
+  width: calc(10% - 4px);
+  align-items: center;
+  justify-content: center;
+  margin: 2px;
+  text-transform: uppercase;
+  background-color: #456;
+  border-radius: 4px;
 }
 
 .key.long {
-  width: 50px;
+  width: calc(15% - 4px);
 }
 
+.green {
+  background-color: #3D9;
+  color: black;
+}
+
+.yellow {
+  background-color: #FD0;
+  color: black;
+}
+
+.letter.gray {
+  background-color: #456;
+}
+
+.key.gray {
+  background-color: #234;
+}
 </style>
