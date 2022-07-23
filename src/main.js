@@ -1,6 +1,8 @@
 import { createApp } from 'vue'
 import { createStore } from 'vuex'
 import App from './App.vue'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
 
 function generatePattern(guess, answer) {
   const pattern = ['gray', 'gray', 'gray', 'gray', 'gray']
@@ -118,9 +120,5 @@ const store = createStore({
 })
 const app = createApp(App)
 app.use(store)
-
-import axios from 'axios'
-import VueAxios from 'vue-axios'
 app.use(VueAxios, axios)
-
 app.mount('#app')
