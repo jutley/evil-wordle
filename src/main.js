@@ -110,7 +110,7 @@ const store = createStore({
   actions: {
     fetchWords ({ commit }) {
       axios
-        .get('/words.txt')
+        .get('words.txt')
         .then(response => response.data)
         .then(wordsRaw => wordsRaw.split("\n"))
         .then(words => commit('populateAllWords', words))
