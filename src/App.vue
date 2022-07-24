@@ -8,9 +8,9 @@
   <div id="game">
     <div id="game-container" :class="{win: gameState == 'win', lose: gameState == 'lose'}">
       <div v-for="guess in guesses" :key="guess" class="guess">
-        <div 
+        <div
           v-for="(e, i) in guess.word.length" :key="i"
-          class="letter" 
+          class="letter"
           :class="{
             green: guess.pattern[i] == 'green',
             yellow: guess.pattern[i] == 'yellow',
@@ -165,7 +165,7 @@ body{
   overflow-y: hidden;
 
   --background: #123;
-  --gray-1: #234; 
+  --gray-1: #234;
   --gray-2: #345;
   --gray-3: #456;
   --yellow: #FD0;

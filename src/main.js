@@ -57,8 +57,8 @@ function findLeastHelpfulPattern(guess, wordBank) {
 const store = createStore({
   state: {
     gameName: "Evil Wordle",
-    wordLength: 7,
-    totalGuessCount: 8,
+    wordLength: 5,
+    totalGuessCount: 6,
     gameState: "playing",
     guesses: [],
     letters: [],
