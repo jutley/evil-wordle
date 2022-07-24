@@ -133,9 +133,16 @@ export default {
 </script>
 
 <style>
+html {
+  height: 100%;
+}
+
 body{
+  height: 100%;
+  overflow-y: hidden;
   background-color: #123;
   margin: 0;
+  padding: 0;
   color: white;
 }
 
@@ -144,14 +151,14 @@ body{
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   max-width: 600px;
   margin: 0 auto;
-  position: relative;
   --header-height: 100px;
   --keyboard-height: calc(3 * (50px + 2px));
-  --game-height: calc(100vh - var(--header-height) - var(--keyboard-height));
 }
 
 #header {
@@ -163,7 +170,11 @@ h1 {
 }
 
 #game {
-  height: var(--game-height);
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
 }
 
 .guess {
