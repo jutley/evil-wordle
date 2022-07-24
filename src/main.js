@@ -5,7 +5,7 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 
 function generatePattern(guess, answer) {
-  const pattern = ['gray', 'gray', 'gray', 'gray', 'gray']
+  const pattern = guess.split("").map(() => 'gray')
   const answerCopy = answer.split('')
   for (var i = 0; i < guess.length; i++) {
     if (guess.charAt(i) == answerCopy[i]) {
@@ -35,7 +35,7 @@ function findLeastHelpfulPattern(guess, wordBank) {
     patterns[pattern].push(word)
   }
   var max = 0, pattern, newWordBank
-  const allGreen = ['green', 'green', 'green', 'green', 'green']
+  const allGreen = guess.split("").map(() => 'green')
   for (const [curPattern, curWordBank] of Object.entries(patterns)) {
     console.log(curPattern, curWordBank.length)
     console.log(allGreen.join(','), curPattern === allGreen.join(','))
@@ -57,8 +57,9 @@ function findLeastHelpfulPattern(guess, wordBank) {
 const store = createStore({
   state: {
     gameName: "Evil Wordle",
-    wordLength: 5,
-    totalGuessCount: 6,
+    wordLength: 7,
+    totalGuessCount: 8,
+    gameState: "playing",
     guesses: [],
     letters: [],
     letterColors: {},
@@ -73,7 +74,7 @@ const store = createStore({
   mutations: {
     populateAllWords (state, words) {
       state.allWords = words
-      state.remainingWords = words.filter(w => w.length == 5)
+      state.remainingWords = words.filter(w => w.length == state.wordLength)
     },
     enterLetter (state, letter) {
       if (state.letters.length < state.wordLength) {
@@ -104,6 +105,11 @@ const store = createStore({
         state.letters = []
         state.remainingWords = newWordBank
         console.log(pattern, state.remainingWords.length, state.remainingWords)
+        if (pattern.every(p => p == "green")) {
+          state.gameState = "win"
+        } else if (state.guesses.length == state.totalGuessCount) {
+          state.gameState = "lose"
+        }
       }
     }
   },

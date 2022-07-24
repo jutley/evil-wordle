@@ -3,24 +3,35 @@
     <h1>{{gameName}}</h1>
 
     <p>{{remainingWordsLength}} words remaining</p>
-    <!-- <p>{{wordSamples}}</p> -->
   </div>
 
   <div id="game">
-    <div v-for="guess in guesses" :key="guess" class="guess">
-      <div 
-        v-for="(e, i) in guess.word.length" :key="i"
-        class="letter" 
-        :class="{ green: guess.pattern[i] == 'green', yellow: guess.pattern[i] == 'yellow', gray: guess.pattern[i] == 'gray' }">{{ guess.word[i] }}</div>
-    </div>
+    <div id="game-container" :class="{win: gameState == 'win', lose: gameState == 'lose'}">
+      <div v-for="guess in guesses" :key="guess" class="guess">
+        <div 
+          v-for="(e, i) in guess.word.length" :key="i"
+          class="letter" 
+          :class="{
+            green: guess.pattern[i] == 'green',
+            yellow: guess.pattern[i] == 'yellow',
+            gray: guess.pattern[i] == 'gray'
+          }">{{ guess.word[i] }}</div>
+      </div>
 
-    <div v-if="guesses.length != totalGuessCount" class="guess">
-      <div v-for="letter in letters" :key="letter" class="letter filled">{{ letter }}</div>
-      <div v-for="i in wordLength - letters.length" :key="i" class="letter" :class="{active: i == 1}"></div>
-    </div>
+      <div v-if="guesses.length != totalGuessCount" class="guess">
+        <div v-for="letter in letters" :key="letter" class="letter filled">{{ letter }}</div>
+        <div v-for="i in wordLength - letters.length" :key="i" class="letter" :class="{active: i == 1}"></div>
+      </div>
 
-    <div v-for="i in futureGuessCount" :key="i" class="guess">
-      <div v-for="j in wordLength" :key="j" class="letter future"></div>
+      <div v-for="i in futureGuessCount" :key="i" class="guess">
+        <div v-for="j in wordLength" :key="j" class="letter future"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container">
+    <div v-if="toastText != ''" id="toast">
+      {{ toastText }}
     </div>
   </div>
 
@@ -105,6 +116,16 @@ export default {
       } else {
         return "..."
       }
+    },
+    gameState() {
+      return this.$store.state.gameState
+    },
+    toastText() {
+      if (this.$store.state.gameState == "win") {
+        return "You win!"
+      } else if (this.$store.state.gameState == "lose") {
+        return "You lose!"
+      } else return ""
     }
   },
   methods: {
@@ -139,10 +160,19 @@ html {
 
 body{
   height: 100%;
-  overflow-y: hidden;
-  background-color: #123;
   margin: 0;
   padding: 0;
+  overflow-y: hidden;
+
+  --background: #123;
+  --gray-1: #234; 
+  --gray-2: #345;
+  --gray-3: #456;
+  --yellow: #FD0;
+  --green: #3D9;
+  --red: #F44;
+
+  background-color: var(--background);
   color: white;
 }
 
@@ -150,22 +180,32 @@ body{
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+
   height: 100%;
   width: 100%;
-  display: flex;
-  flex-direction: column;
   max-width: 600px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+
+  --letter-size: 50px;
+
+  --key-height: 50px;
+  --key-margin: 2px;
   --header-height: 100px;
-  --keyboard-height: calc(3 * (50px + 2px));
+  --keyboard-height: calc(3 * (var(--key-height) + var(--key-margin)));
 }
 
 #header {
   height: var(--header-height);
 }
 
-h1 {
+#header p {
+  margin: 0;
+}
+
+#header h1 {
   margin: 0;
 }
 
@@ -177,6 +217,21 @@ h1 {
   align-items: center;
 }
 
+#game-container {
+  padding: 5px;
+  border: 1px solid var(--background);
+}
+
+#game-container.win {
+  padding: 5px;
+  border: 1px solid var(--green);
+}
+
+#game-container.lose {
+  padding: 5px;
+  border: 1px solid var(--red);
+}
+
 .guess {
   display: flex;
   justify-content: center;
@@ -184,18 +239,30 @@ h1 {
 
 .letter {
   display: block;
-  width: 50px;
-  height: 50px;
-  line-height: 50px;
+  width: var(--letter-size);
+  height: var(--letter-size);
+  line-height: var(--letter-size);
   margin: 5px;
   text-transform: uppercase;
   color: white;
-  background-color: #234;
+  background-color: var(--gray-1);
   border-radius: 4px;
 }
 
 .active {
-  background-color: #345;
+  background-color: var(--gray-2);
+}
+
+#toast-container {
+  height: 2em;
+  margin-bottom: 1em;
+}
+
+#toast {
+  display: inline;
+  padding: 0.5em 1em;
+  background-color: var(--gray-1);
+  border-radius: 4px;
 }
 
 #keyboard {
@@ -210,40 +277,41 @@ h1 {
   display: flex;
   flex-flow: row;
   justify-content: center;
-  height: calc(33.3%);
+  height: calc(33.33%);
 }
 
 .key {
   display: flex;
-  height: calc(100% - 4px);
-  width: calc(10% - 4px);
+  height: calc(100% - 2 * var(--key-margin));
+  width: calc(10% - 2 * var(--key-margin));
+  margin: var(--key-margin);
   align-items: center;
   justify-content: center;
-  margin: 2px;
   text-transform: uppercase;
-  background-color: #456;
+  background-color: var(--gray-3);
   border-radius: 4px;
+  cursor: pointer;
 }
 
 .key.long {
-  width: calc(15% - 4px);
+  width: calc(15% - 2 * var(--key-margin));
 }
 
 .green {
-  background-color: #3D9;
+  background-color: var(--green);
   color: black;
 }
 
 .yellow {
-  background-color: #FD0;
+  background-color: var(--yellow);
   color: black;
 }
 
 .letter.gray {
-  background-color: #456;
+  background-color: var(--gray-3);
 }
 
 .key.gray {
-  background-color: #234;
+  background-color: var(--gray-1);
 }
 </style>
